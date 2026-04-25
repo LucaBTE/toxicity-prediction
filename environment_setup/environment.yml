@@ -39,4 +39,5 @@ dependencies:
     - skunk
     - networkx<3.0 # Ensure compatibility with exmol and mordred
     - mordred # for dragon-like features
+    - missingno
     - git+https://github.com/bp-kelley/descriptastorus # Essential for DeepPurpose
