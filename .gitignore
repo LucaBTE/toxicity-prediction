@@ -1,1 +1,26 @@
+# Data and heavy binaries
 data/
+*.pkl
+*.csv
+
+# Python packaging and metadata
+toxicity_prediction.egg-info/
+build/
+dist/
+
+# Byte-compiled / optimized modules
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments (local)
+env/
+venv/
+.env/
+
+# OS generated files
+.DS_Store
+Thumbs.db
