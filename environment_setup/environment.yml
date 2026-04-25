@@ -1,0 +1,42 @@
+name: tox_prediction
+channels:
+  - conda-forge
+  - pytorch
+  - defaults
+dependencies:
+  # Base Python and core Data Science
+  - python=3.10
+  - ipykernel
+  - jupyter
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - scipy
+  - tqdm
+  - setuptools=69.5.1
+  
+  # Chemistry and ML
+  - rdkit
+  - scikit-learn
+  - joblib
+  
+  # Deep Learning (Standard versions for DeepPurpose compatibility)
+  - pytorch
+  - torchvision
+  - torchaudio
+  - cpuonly # Change to 'pytorch-cuda=11.8' if you have an NVIDIA GPU
+  
+  # TDC and specialized tools
+  - pytdc
+  - gpytorch
+  
+  # Pip-specific installs for DeepPurpose and Explainability
+  - pip
+  - pip:
+    - DeepPurpose
+    - exmol
+    - skunk
+    - networkx<3.0 # Ensure compatibility with exmol and mordred
+    - mordred # for dragon-like features
+    - git+https://github.com/bp-kelley/descriptastorus # Essential for DeepPurpose
