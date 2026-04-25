@@ -41,3 +41,7 @@ dependencies:
     - mordred # for dragon-like features
     - missingno
     - git+https://github.com/bp-kelley/descriptastorus # Essential for DeepPurpose
+    # Optional GPU acceleration (RAPIDS)
+    - cupy
+    - cuml
+    - cudf
