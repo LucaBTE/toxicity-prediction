@@ -1,5 +1,6 @@
 # Data and heavy binaries
 data/
+tmp/
 *.pkl
 *.csv
 
