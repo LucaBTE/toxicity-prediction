@@ -188,7 +188,7 @@ def save_ml_run(
     plot_pred_vs_real(paths["pred_vs_real"], y_test, predictions, f"{name}: Predicted vs Real")
 
     importance = model_importance(model, X_test, y_test)
-    if importance is not None and "importance" in paths:
+    if importance is not None and "importance" in paths.keys():
         plot_importance(paths["importance"], importance, feature_names, f"{name} Feature Importance")
 
     return metrics
