@@ -23,4 +23,4 @@ venv/
 
 # OS generated files
 .DS_Store
-Thumbs.db
+Thumbs.dbnotebooks/ml-models/outcome/models/*.joblib
