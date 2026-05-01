@@ -6,3 +6,5 @@ For windows I folloed this [tutorial](https://www.youtube.com/watch?v=4lyHIQl4VM
 3. Install the estension ["LaTex Workhop"](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
 4. Reboot the PC
 5. Open in VSCode the folder with the .tex file
+
+> if it happens that, even the latex is correct, it creates white pages or something is wrong, try to delete the pdf and save another time the latex after a small modification
