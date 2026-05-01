@@ -1,0 +1,9 @@
+{
+  "run_id": "deeppurpose_cnn",
+  "drug_encoding": "CNN",
+  "metrics": {
+    "rmse": 0.9400406224445194,
+    "mae": 0.6675074338945226,
+    "r2": 0.21142706377015597
+  }
+}

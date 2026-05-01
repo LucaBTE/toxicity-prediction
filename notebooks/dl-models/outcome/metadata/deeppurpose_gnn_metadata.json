@@ -1,0 +1,9 @@
+{
+  "run_id": "deeppurpose_gnn",
+  "drug_encoding": "DGL_GCN",
+  "metrics": {
+    "rmse": 0.940981656793627,
+    "mae": 0.6750133618005074,
+    "r2": 0.20984746043945035
+  }
+}
