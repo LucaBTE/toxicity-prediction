@@ -1,21 +1,80 @@
 {
   "run_id": "weighted_ensemble",
   "metrics": {
-    "rmse": 0.5553029877895395,
-    "mae": 0.41178118659615504,
-    "r2": 0.6548482411363561
+    "rmse": 0.5440259125493889,
+    "mae": 0.402876019643671,
+    "r2": 0.6687245575369527
   },
   "validation_metrics": {
-    "rmse": 0.5988616793228617,
-    "mae": 0.4300907328214799,
-    "r2": 0.6251753180484347
+    "rmse": 0.5987156668192933,
+    "mae": 0.4276571579224539,
+    "r2": 0.6253580728319387
   },
   "weights": {
-    "ridge": 1.9075412250353046e-19,
-    "elastic_net": 6.172801994173564e-17,
-    "random_forest": 4.39276590844648e-17,
-    "extra_trees": 0.46120393824468936,
-    "hist_gradient_boosting": 0.5387960617553106,
-    "xgboost": 2.5571575000696317e-18
+    "ridge": 5.392895976658178e-19,
+    "elastic_net": 1.725845441089727e-17,
+    "random_forest": 7.001075334584992e-21,
+    "extra_trees": 0.012358322345506826,
+    "hist_gradient_boosting": 0.11117923624555719,
+    "xgboost": 0.876462441408936
+  },
+  "tuned_params": {
+    "random_forest": {
+      "n_estimators": 1000,
+      "max_depth": 39,
+      "max_features": "sqrt",
+      "min_samples_split": 3,
+      "min_samples_leaf": 4,
+      "bootstrap": false
+    },
+    "extra_trees": {
+      "n_estimators": 1200,
+      "max_depth": 39,
+      "max_features": 0.75,
+      "min_samples_split": 6,
+      "min_samples_leaf": 2,
+      "bootstrap": true
+    },
+    "hist_gradient_boosting": {
+      "learning_rate": 0.03268396148966359,
+      "max_iter": 1000,
+      "max_leaf_nodes": 50,
+      "min_samples_leaf": 40,
+      "l2_regularization": 0.00042079886696066364
+    },
+    "xgboost": {
+      "n_estimators": 700,
+      "learning_rate": 0.020620017351642206,
+      "max_depth": 7,
+      "min_child_weight": 0.7361009011511537,
+      "subsample": 0.7522506269873264,
+      "colsample_bytree": 0.7148628294821613,
+      "reg_alpha": 0.006672367170464205,
+      "reg_lambda": 3.0489195547657553,
+      "gamma": 0.0006290644294586153
+    }
+  },
+  "tuning": {
+    "enabled": true,
+    "models": [
+      "random_forest",
+      "extra_trees",
+      "hist_gradient_boosting",
+      "xgboost"
+    ],
+    "n_trials": {
+      "random_forest": 5,
+      "extra_trees": 5,
+      "hist_gradient_boosting": 5,
+      "xgboost": 5
+    },
+    "timeout_seconds": {
+      "random_forest": 900,
+      "extra_trees": 900,
+      "hist_gradient_boosting": 900,
+      "xgboost": 900
+    },
+    "valid_size": 0.15,
+    "sampler": "TPESampler"
   }
 }

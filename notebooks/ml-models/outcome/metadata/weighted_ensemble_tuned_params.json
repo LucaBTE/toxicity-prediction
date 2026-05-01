@@ -1,0 +1,36 @@
+{
+  "random_forest": {
+    "n_estimators": 1000,
+    "max_depth": 39,
+    "max_features": "sqrt",
+    "min_samples_split": 3,
+    "min_samples_leaf": 4,
+    "bootstrap": false
+  },
+  "extra_trees": {
+    "n_estimators": 1200,
+    "max_depth": 39,
+    "max_features": 0.75,
+    "min_samples_split": 6,
+    "min_samples_leaf": 2,
+    "bootstrap": true
+  },
+  "hist_gradient_boosting": {
+    "learning_rate": 0.03268396148966359,
+    "max_iter": 1000,
+    "max_leaf_nodes": 50,
+    "min_samples_leaf": 40,
+    "l2_regularization": 0.00042079886696066364
+  },
+  "xgboost": {
+    "n_estimators": 700,
+    "learning_rate": 0.020620017351642206,
+    "max_depth": 7,
+    "min_child_weight": 0.7361009011511537,
+    "subsample": 0.7522506269873264,
+    "colsample_bytree": 0.7148628294821613,
+    "reg_alpha": 0.006672367170464205,
+    "reg_lambda": 3.0489195547657553,
+    "gamma": 0.0006290644294586153
+  }
+}
