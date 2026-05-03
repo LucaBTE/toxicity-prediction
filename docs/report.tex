@@ -163,21 +163,41 @@ The identified inconsistent samples (30 in total) were maintained to prevent the
 By combining fingerprints (Avalon, Morgan, ErG) with Dragon descriptors, we create a hybrid feature space. These features are strictly structural and physicochemical, ensuring that no target leakage occurs during the learning process.
 
 \section{Results}
-Present your findings here. Use tables to summarize the data.
+We tested different ML-models to predict the $LD_{50}$ values of the test set. 
+The performance metrics used for evaluation are Root Mean Square Error (RMSE), 
+Mean Absolute Error (MAE), and Coefficient of Determination ($R^2$).
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
-\caption{Dose-Response Data for Group 5 Substance.}
-\begin{tabular}{ccc}
+\caption{Performances of the different machine learning models we tried. 
+Only test set is considered.}
+\label{tab:model_test_comparison}
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
 \toprule
-Dose (mg/kg) & Mortality (\%) & Observations \\
+Model & RMSE & MAE & $R^2$ \\
 \midrule
-10  & 0   & No symptoms \\
-50  & 20  & Lethargy \\
-100 & 50  & $LD_{50}$ Threshold \\
-500 & 100 & Rapid onset \\
+Ridge Regression & 1.1126 & 0.7460 & -0.1046 \\
+SVM & 0.9336 & 0.6507 & 0.2221 \\
+Random Forest & 0.8888 & 0.6289 & 0.2951 \\
+Weighted Ensemble & 0.8978 & 0.6269 & 0.2807 \\
+\textbf{XGBoost} & \textbf{0.8773} & \textbf{0.6158} & \textbf{0.3132} \\
 \bottomrule
 \end{tabular}
+
+\vspace{0.6em}
+\raggedright
+\textbf{Interpretation.}
+XGBoost is the best performing model on the test set, since we obtained the 
+lowest RMSE and MAE and the highest $R^2$ from it. This result is justified 
+by the nature of the descriptor space: the relationship between molecular 
+descriptors and $LD_{50}$ is non linear, sparse, and affected by interactions 
+among physicochemical and structural features. Ridge Regression performs poorly
+due to its linear nature, while SVM and Random Forest improve the 
+fit but remain less effective on the scaffold-split test compounds. 
+The weighted ensemble is competitive, especially in MAE, but it does not surpass 
+XGBoost, suggesting that the validation-optimized combination adds robustness 
+without improving the final held-out ranking.
 \end{table}
 
 \section{Discussion \& Conclusion}
@@ -198,6 +218,10 @@ Partex ADMETrix. \textit{Advancing ADMET Prediction: A Hybrid Machine Learning F
 \bibitem{QSAR_Paper} 
 Zhu et al. \textit{Quantitative Structure-Activity Relationship Modeling of Rat Acute Toxicity by Oral Exposure}. 
 \url{https://pubs.acs.org/doi/abs/10.1021/tx900189p}
+
+\bibitem{OCE_Paper}
+Huang et al. \textit{A Unified System for Molecular Property Predictions: Oloren ChemEngine and its Applications}. ChemRxiv, 2022.
+\url{https://doi.org/10.26434/chemrxiv-2022-zz776}
 
 \end{thebibliography}
 
