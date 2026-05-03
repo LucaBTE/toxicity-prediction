@@ -19,7 +19,19 @@ dependencies:
   # Chemistry and ML
   - rdkit
   - scikit-learn
+  - xgboost
   - joblib
+  - shap
+  
+  # Deep Learning (Standard versions for DeepPurpose compatibility)
+  - pytorch
+  - optuna
+  - alembic
+  - colorlog
+  - mako
+  - libblas
+  - libcblas
+  - liblapack
   
   # Deep Learning (Standard versions for DeepPurpose compatibility)
   - pytorch
@@ -41,6 +53,7 @@ dependencies:
     - mordred # for dragon-like features
     - missingno
     - git+https://github.com/bp-kelley/descriptastorus # Essential for DeepPurpose
+    - tdqm
     # Optional GPU acceleration (RAPIDS)
     - cupy
     - cuml
