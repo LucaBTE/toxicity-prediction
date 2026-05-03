@@ -9,18 +9,18 @@
   },
   "extra_trees": {
     "n_estimators": 600,
-    "max_depth": 25,
-    "max_features": 0.35,
-    "min_samples_split": 12,
-    "min_samples_leaf": 5,
-    "bootstrap": false
+    "max_depth": 21,
+    "max_features": 0.75,
+    "min_samples_split": 5,
+    "min_samples_leaf": 3,
+    "bootstrap": true
   },
   "hist_gradient_boosting": {
-    "learning_rate": 0.115872231463609,
-    "max_iter": 950,
-    "max_leaf_nodes": 39,
-    "min_samples_leaf": 30,
-    "l2_regularization": 0.006385072781748086
+    "learning_rate": 0.06715957246799453,
+    "max_iter": 400,
+    "max_leaf_nodes": 45,
+    "min_samples_leaf": 17,
+    "l2_regularization": 0.0006378302756477781
   },
   "xgboost": {
     "n_estimators": 300,
