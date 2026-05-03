@@ -20,6 +20,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
+FEATURE_SELECTION_DATA_DIR = PROJECT_ROOT / "data" / "feature_selection"
 TARGET_COLUMN = "Y"
 SMILES_COLUMN = "canonical_smiles"
 ID_COLUMNS = ("Drug_ID", "Drug", SMILES_COLUMN, "mol")
@@ -82,6 +83,74 @@ def load_tabular_arrays(data_dir: str | Path = PROCESSED_DATA_DIR) -> tuple:
         y["valid"],
         y["test"],
         preprocessor.get_feature_names_out(),
+    )
+
+
+def load_feature_selected_arrays(
+    feature_dir: str | Path = FEATURE_SELECTION_DATA_DIR,
+    target_data_dir: str | Path = PROCESSED_DATA_DIR,
+) -> tuple:
+    """Load train/valid/test arrays restricted to the feature-selection output.
+
+    The feature-selection CSV files contain only the selected descriptors, while
+    the target is kept in the processed split files. Both split sets must keep
+    the same row order.
+    """
+    feature_dir = Path(feature_dir).expanduser().resolve()
+    target_frames = load_split_frames(target_data_dir)
+    X = {
+        split: pd.read_csv(feature_dir / f"{split}.csv")
+        for split in ("train", "valid", "test")
+    }
+    y = {
+        split: pd.to_numeric(target_frames[split][TARGET_COLUMN], errors="raise").to_numpy()
+        for split in ("train", "valid", "test")
+    }
+
+    train_columns = list(X["train"].columns)
+    if train_columns != list(X["valid"].columns) or train_columns != list(X["test"].columns):
+        raise ValueError("Feature-selected train, validation and test columns must match")
+
+    for split in X:
+        if len(X[split]) != len(y[split]):
+            raise ValueError(
+                f"Feature-selected {split} rows ({len(X[split])}) do not match "
+                f"target rows ({len(y[split])})"
+            )
+
+    bool_cols = X["train"].select_dtypes(include=["bool"]).columns.tolist()
+    for split in X:
+        X[split][bool_cols] = X[split][bool_cols].astype("int8")
+
+    numeric_cols = X["train"].select_dtypes(include=["number"]).columns.tolist()
+    categorical_cols = X["train"].select_dtypes(include=["object", "category"]).columns.tolist()
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+            ]), numeric_cols),
+            ("cat", Pipeline([
+                ("imputer", SimpleImputer(strategy="most_frequent")),
+                ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
+            ]), categorical_cols),
+        ],
+        remainder="drop",
+    )
+
+    X_train = preprocessor.fit_transform(X["train"])
+    X_valid = preprocessor.transform(X["valid"])
+    X_test = preprocessor.transform(X["test"])
+
+    return (
+        X_train,
+        X_valid,
+        X_test,
+        y["train"],
+        y["valid"],
+        y["test"],
+        preprocessor.get_feature_names_out(),
+        preprocessor,
     )
 
 

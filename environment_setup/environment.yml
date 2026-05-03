@@ -19,6 +19,7 @@ dependencies:
   # Chemistry and ML
   - rdkit
   - scikit-learn
+  - xgboost
   - joblib
   
   # Deep Learning (Standard versions for DeepPurpose compatibility)
