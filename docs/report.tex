@@ -155,6 +155,19 @@ The integration of these methods—combining statistical filters, embedded regul
 \end{figure*}
 \clearpage
 
+\section{Predictive Modeling}
+
+In this section, we describe the development and evaluation of several machine learning architectures implemented to predict chemical toxicity ($LD_{50}$). To ensure optimal performance, each model underwent automated hyperparameter optimization using the \textbf{Optuna} framework. We systematically analyzed the relationship between feature count and predictive accuracy through \textbf{score curves}, identifying the optimal subset of descriptors for each specific algorithm. 
+
+Following training, the models were evaluated on the independent test set. To bridge the gap between predictive performance and chemical insight, we employed \textbf{SHAP (SHapley Additive exPlanations)} values for post-hoc interpretability, allowing us to identify the molecular drivers behind the toxicity predictions. The following architectures were evaluated:
+
+\begin{itemize}
+    \item \textbf{Linear Models}: Ridge Regression served as our regularized linear baseline.
+    \item \textbf{Ensemble Methods}: Random Forest and XGBoost were utilized to capture non-linear relationships and feature interactions.
+    \item \textbf{Kernel-based Models}: Support Vector Machines (SVM) were implemented to project the chemical space into higher dimensions.
+    \item \textbf{Ensemble soft-voted-Learning}: A Weighted Ensemble was constructed to integrate the strengths of individual predictors for superior generalization.
+\end{itemize}
+ \subsection {Ridge Regression}
 
 \subsection{Inconsistency Rationale}
 The identified inconsistent samples (30 in total) were maintained to prevent the loss of experimental variability. In biological assays, $LD_{50}$ values can vary depending on conditions, and keeping these entries allows the models to potentially learn a more robust, averaged representation.
