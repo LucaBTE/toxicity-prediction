@@ -21,6 +21,10 @@ dependencies:
   - scikit-learn
   - xgboost
   - joblib
+  - shap
+  
+  # Deep Learning (Standard versions for DeepPurpose compatibility)
+  - pytorch
   - optuna
   - alembic
   - colorlog

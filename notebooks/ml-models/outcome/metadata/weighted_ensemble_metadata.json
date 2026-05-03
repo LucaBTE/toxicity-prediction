@@ -1,14 +1,14 @@
 {
   "run_id": "weighted_ensemble",
   "metrics": {
-    "rmse": 0.5620441766670513,
-    "mae": 0.4120330404061177,
-    "r2": 0.6464173263993355
+    "rmse": 0.5620441778774162,
+    "mae": 0.4120330421263167,
+    "r2": 0.6464173248764513
   },
   "validation_metrics": {
-    "rmse": 0.6040873652878926,
-    "mae": 0.4284835672470366,
-    "r2": 0.6186053134647573
+    "rmse": 0.6040873620284273,
+    "mae": 0.4284835673206411,
+    "r2": 0.6186053175805286
   },
   "feature_source": "data/feature_selection",
   "n_selected_features": 100,
@@ -116,12 +116,12 @@
   ],
   "fit_policy": "base estimators fit on train only; validation used for weights",
   "weights": {
-    "ridge": 1.5938501503507347e-17,
-    "elastic_net": 6.272058233158244e-19,
-    "random_forest": 0.07853496638743777,
-    "extra_trees": 4.866999819748667e-19,
-    "hist_gradient_boosting": 0.05497160369111163,
-    "xgboost": 0.8664934299214505
+    "ridge": 2.393653097972762e-19,
+    "elastic_net": 1.6676171813755775e-19,
+    "random_forest": 0.07853505187616634,
+    "extra_trees": 8.134920268670451e-17,
+    "hist_gradient_boosting": 0.054972446828861266,
+    "xgboost": 0.8664925012949724
   },
   "tuned_params": {
     "random_forest": {
