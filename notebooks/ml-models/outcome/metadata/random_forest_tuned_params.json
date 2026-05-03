@@ -1,0 +1,10 @@
+{
+  "random_forest": {
+    "n_estimators": 1000,
+    "max_depth": 35,
+    "max_features": 0.75,
+    "min_samples_split": 6,
+    "min_samples_leaf": 3,
+    "bootstrap": true
+  }
+}

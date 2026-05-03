@@ -25,6 +25,16 @@ dependencies:
   
   # Deep Learning (Standard versions for DeepPurpose compatibility)
   - pytorch
+  - optuna
+  - alembic
+  - colorlog
+  - mako
+  - libblas
+  - libcblas
+  - liblapack
+  
+  # Deep Learning (Standard versions for DeepPurpose compatibility)
+  - pytorch
   - torchvision
   - torchaudio
   - cpuonly # Change to 'pytorch-cuda=11.8' if you have an NVIDIA GPU
@@ -43,6 +53,7 @@ dependencies:
     - mordred # for dragon-like features
     - missingno
     - git+https://github.com/bp-kelley/descriptastorus # Essential for DeepPurpose
+    - tdqm
     # Optional GPU acceleration (RAPIDS)
     - cupy
     - cuml
