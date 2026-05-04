@@ -162,17 +162,12 @@ Weight are not skewed by irrelevant counter-ions.
 
 \subsection{Basic Data Exploration}
 
-Basic exploratory data analysis confirmed that the processed training,
-validation, and test partitions contain no missing values, and that the target
-distributions are consistent across all sets (as shown in
-Figure~\ref{target_distr}). Scaffold analysis showed a high number of unique
-molecular frameworks and essentially zero overlap between partitions, indicating
-that the model evaluation is based on scaffold-split generalization rather than
-memorization of known structures. Spearman correlation analysis and a linear
-regression baseline identified the most predictive descriptors and provided an
-initial ranking of feature relevance. In addition, through ANOVA analysis we were
-able to extrapolate the most significant features that are shown in
-Figure~\ref{anova}.
+\subsection{Basic Data Exploration}
+Basic exploratory data analysis showed no missing values in the processed training, validation, and test splits. The target distributions are broadly similar in shape, but they are not identical: the test set is shifted toward higher $LD_{50}$ values (median 2.56, compared with 2.31 for training and 2.37 for validation) and contains more extreme high-value outliers, indicating a moderate distribution shift across partitions (Figure~\ref{target_distr}). 
+Scaffold analysis showed a high number of unique molecular frameworks and no scaffold overlap between the current training, validation, and test partitions. This confirms that the model evaluation is based on scaffold-split generalization rather than memorization of known molecular frameworks. 
+Spearman correlation analysis highlighted moderately associated descriptors, with the strongest correlations around 0.46 in absolute value. In contrast, the simple linear regression baseline showed very limited explanatory power ($R^2 \approx 0.0015$), suggesting that linear effects alone are insufficient for this task.
+The inter-feature correlation analysis also revealed many highly redundant descriptor pairs, including several near-duplicate RDKit and Mordred features. This redundancy motivated the subsequent feature selection step.
+
 
 \begin{figure}[H]
     \centering
@@ -190,17 +185,12 @@ Figure~\ref{anova}.
 
 \subsection{Advanced Data Exploration}
 
-Advanced analysis investigated descriptor-level variability, outliers, and the
-intrinsic dimensionality of the feature space. Outliers were detected using both
-IQR and Z-score thresholds (as shown in Figure~\ref{outliers}), and feature
-dispersion was measured using the coefficient of variation (as shown in
-Figure~\ref{coeff_var}). Principal Component Analysis (PCA) with robust scaling
-quantified the number of components required to capture the majority of
-variance, while multi-scale PCA projections revealed structure in the
-chemical-toxicity relationships showed in Figure~\ref{pca_multiscale}. Finally,
-ANOVA across discretized low, medium, and high toxicity groups identified
-descriptors with statistically significant differences, highlighting promising
-features for downstream modeling.
+\subsection{Advanced Data Exploration}
+Advanced analysis investigated descriptor-level variability, outliers, and the intrinsic dimensionality of the feature space. 
+Outliers were detected using both IQR and Z-score thresholds (Figure~\ref{outliers}); in the current training split, 38 $LD_{50}$ values were marked as target outliers using the $|z| > 3$ criterion. Feature dispersion was measured using the coefficient of variation (Figure~\ref{coeff_var}), although this metric was treated as a diagnostic indicator because descriptors with means close to zero can produce unstable CV values. 
+Principal Component Analysis (PCA) with robust scaling quantified the number of components required to capture the majority of variance. The PCA projections were used to inspect whether toxicity-related patterns emerge in the descriptor space, without assuming a clear separation between toxicity levels (Figure~\ref{pca_multiscale}). 
+Finally, ANOVA across discretized low, medium, and high toxicity groups identified descriptors with statistically significant differences (Figure~\ref{anova}). Since a large number of descriptors were tested, these results were interpreted as exploratory evidence of feature relevance rather than as standalone proof of causal or independent importance.
+
 
 \begin{figure}[H]
     \centering
