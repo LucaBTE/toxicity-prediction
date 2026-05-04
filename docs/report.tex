@@ -411,15 +411,27 @@ This framework can be applied to other toxicological endpoints, such as aquatic 
 The scaffold-split methodology ensures that the deployment of these models remains reliable even when encountering novel chemical spaces, a common requirement when evaluating industrial chemicals or emerging pharmaceutical classes.
 
 \section{Discussion \& Conclusion}
+The model predicts continuous $LD_{50}$ 
+values for a heterogeneous set of molecules 
+rather than one compound-specific $LD_{50}$ value 
+in mg/kg. Comparing these results with historical 
+TDC benchmark data suggests that our XGBoost model 
+achieves competitive predictive performance, 
+with a test \textbf{MAE of 0.6158}, although the moderate 
+$R^2$ indicates that the model should be used mainly 
+as an early screening tool rather than as a 
+definitive toxicological classifier in a production 
+scenario.\\
 
-The results obtained for Group 5 indicate a toxicity class of [Class Number]
-according to the GHS (Globally Harmonized System). Comparing these results with
-historical data suggests that [Your Conclusion].
 
-In conclusion, while $LD_{50}$ provides a fundamental baseline for toxicity,
-modern toxicology is increasingly moving towards alternative methods (3Rs:
-Replacement, Reduction, Refinement) to minimize animal testing while maintaining
-high safety standards.
+In conclusion, we would say that the $LD_{50}$ prediction task is 
+a complex regression problem that benefits from a hybrid feature 
+representation and robust machine learning techniques.
+Still, the results are not perfect and there is room for improvement,
+we are not yet at the point where we can rely on these models
+for critical decision making in drug development,
+but they can be useful to prioritize compounds for further
+testing and to gain initial insights for future model refinement.
 
 \begin{thebibliography}{99}
 
