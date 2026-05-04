@@ -17,12 +17,11 @@
 \geometry{left=1.5cm, right=1.5cm, top=1.5cm, bottom=2cm}
 
 % Doc info
-\title{Predicting Acute Oral Toxicity ($LD_{50}$): A Machine Learning and Deep Learning Approach using Molecular Descriptors and Graph Representations}
-\author{Group 5 Members \\ 
+\title{Predicting Acute Toxicity ($LD_{50}$): A Machine Learning approach using Molecular Descriptors and Graph Representations}
+\author{Group 5 \\ 
         \small \textit{Abate Luca, Bernacchia Alessia, Pioda Tommaso, Villani Giacomo} \\
-        \small \textit{Department of Innovative Technologies} \\
-        \small \textit{SUPSI}}
-\date{\today}
+        \small \textit{SUPSI (DTI) - Machine Learning for Drug Design}}
+\date{May, 2026}
 
 \begin{document}
 
@@ -155,19 +154,6 @@ The integration of these methods—combining statistical filters, embedded regul
 \end{figure*}
 \clearpage
 
-\section{Predictive Modeling}
-
-In this section, we describe the development and evaluation of several machine learning architectures implemented to predict chemical toxicity ($LD_{50}$). To ensure optimal performance, each model underwent automated hyperparameter optimization using the \textbf{Optuna} framework. We systematically analyzed the relationship between feature count and predictive accuracy through \textbf{score curves}, identifying the optimal subset of descriptors for each specific algorithm. 
-
-Following training, the models were evaluated on the independent test set. To bridge the gap between predictive performance and chemical insight, we employed \textbf{SHAP (SHapley Additive exPlanations)} values for post-hoc interpretability, allowing us to identify the molecular drivers behind the toxicity predictions. The following architectures were evaluated:
-
-\begin{itemize}
-    \item \textbf{Linear Models}: Ridge Regression served as our regularized linear baseline.
-    \item \textbf{Ensemble Methods}: Random Forest and XGBoost were utilized to capture non-linear relationships and feature interactions.
-    \item \textbf{Kernel-based Models}: Support Vector Machines (SVM) were implemented to project the chemical space into higher dimensions.
-    \item \textbf{Ensemble soft-voted-Learning}: A Weighted Ensemble was constructed to integrate the strengths of individual predictors for superior generalization.
-\end{itemize}
- \subsection {Ridge Regression}
 
 \subsection{Inconsistency Rationale}
 The identified inconsistent samples (30 in total) were maintained to prevent the loss of experimental variability. In biological assays, $LD_{50}$ values can vary depending on conditions, and keeping these entries allows the models to potentially learn a more robust, averaged representation.
@@ -175,23 +161,99 @@ The identified inconsistent samples (30 in total) were maintained to prevent the
 \subsection{Feature Integration}
 By combining fingerprints (Avalon, Morgan, ErG) with Dragon descriptors, we create a hybrid feature space. These features are strictly structural and physicochemical, ensuring that no target leakage occurs during the learning process.
 
-\section{Results}
-Present your findings here. Use tables to summarize the data.
+\section{Performances Comparison}
+We tested different ML-models to predict the $LD_{50}$ values of the test set. 
+The performance metrics used for evaluation are Root Mean Square Error (RMSE), 
+Mean Absolute Error (MAE), and Coefficient of Determination ($R^2$).
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
-\caption{Dose-Response Data for Group 5 Substance.}
-\begin{tabular}{ccc}
+\caption{Performances of the different machine learning models we tried. 
+Only test set is considered.}
+\label{tab:model_test_comparison}
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
 \toprule
-Dose (mg/kg) & Mortality (\%) & Observations \\
+Model & RMSE & MAE & $R^2$ \\
 \midrule
-10  & 0   & No symptoms \\
-50  & 20  & Lethargy \\
-100 & 50  & $LD_{50}$ Threshold \\
-500 & 100 & Rapid onset \\
+Ridge Regression & 1.1126 & 0.7460 & -0.1046 \\
+SVM & 0.9336 & 0.6507 & 0.2221 \\
+Random Forest & 0.8888 & 0.6289 & 0.2951 \\
+Weighted Ensemble & 0.8978 & 0.6269 & 0.2807 \\
+\textbf{XGBoost} & \textbf{0.8773} & \textbf{0.6158} & \textbf{0.3132} \\
 \bottomrule
 \end{tabular}
+
+\vspace{0.6em}
+\raggedright
+\textbf{Interpretation.}
+XGBoost is the best performing model on the test set, since we obtained the 
+lowest RMSE and MAE and the highest $R^2$ from it. This result is justified 
+by the nature of the descriptor space: the relationship between molecular 
+descriptors and $LD_{50}$ is non linear, sparse, and affected by interactions 
+among physicochemical and structural features. Ridge Regression performs poorly
+due to its linear nature, while SVM and Random Forest improve the 
+fit but remain less effective on the scaffold-split test compounds. 
+The weighted ensemble is competitive, especially in MAE, but it does not surpass 
+XGBoost, suggesting that the validation-optimized combination adds robustness 
+without improving the final held-out ranking.
+\\
+Our results are aligned with the leaderboard of the TDC challenge,
+and currently our MAE of 0.6158 could place us in the top 10.
 \end{table}
+
+\section{Best Model: XGBoost}
+TODO LUCA
+brief description of the model and remark why it is the slightly better.
+//
+comments con the learning curve and score curve.
+\subsection{Interpretability}
+To gain insight into the decision-making process of our best-performing model, we employed SHAP (SHapley Additive exPlanations) for both global and local interpretability. This allows us to bridge the gap between high-dimensional molecular descriptors and their toxicological meaning.
+
+\subsubsection{Global Interpretability}
+The global impact of descriptors is summarized in the SHAP beeswarm plot (Figure \ref{xgb_global}). The analysis reveals that the model relies heavily on a mix of information-theoretic and electronic descriptors:
+
+\begin{itemize}
+    \item \textbf{mordred\_MIC1}: Identified as the most critical driver. We observe a strong positive correlation where lower feature values consistently lead to lower SHAP values, pushing the prediction toward higher toxicity (lower $LD_{50}$). This suggests that molecular complexity and atom neighborhood information are fundamental to the model's logic.
+    \item \textbf{mordred\_BCUTi-1h}: This descriptor, related to the ionization potential, shows a non-homogeneous distribution. While it holds high importance, its impact is not strictly monotonic, suggesting that the model captures complex interactions where the effect of ionization potential depends on the specific chemical scaffold.
+    \item \textbf{MaxPartialCharge}: The model identifies this feature as a "threshold" indicator. While many molecules cluster around zero impact, extreme high values (represented by the pink tail) significantly push the SHAP values upward, acting as a strong signal for reduced acute toxicity.
+\end{itemize}
+
+\subsubsection{Local Interpretability}
+To understand how the model handles individual compounds, we analyzed a local waterfall plot (Figure \ref{xgb_local}). In this specific instance ($f(x) = 2.564$), we can observe the "push and pull" of conflicting features:
+
+\begin{itemize}
+    \item \textbf{Positive Contributions}: The safety score is primarily increased by \textbf{mordred\_MIC1} ($+0.15$), \textbf{mordred\_PEOE\_VSA8} ($+0.07$), and \textbf{SMR\_VSA10} ($+0.05$). These structural and surface area descriptors act as the main mitigating factors for this molecule.
+    \item \textbf{Negative Contributions}: Conversely, \textbf{mordred\_BCUTs-1l} ($-0.04$) and \textbf{MaxPartialCharge} ($-0.04$) are the main features pulling the prediction toward a more toxic value. 
+\end{itemize}
+
+\begin{figure}[H] %here in the text
+    \includegraphics[width=\linewidth]{interpretability/xgb_global.png}
+    \caption{Global explanation of the XGBoost model.}
+    \label{xgb_global}
+\end{figure}
+
+\begin{figure}[H] %here in the text
+    \includegraphics[width=\linewidth]{interpretability/xgb_local.png}
+    \caption{Local explanation of the XGBoost model.}
+    \label{xgb_local}
+\end{figure}
+
+This dual perspective confirms that XGBoost does not simply rely on a linear combination of features, but rather evaluates the specific chemical context of each molecule. The alignment between global trends and local explanations reinforces the reliability of our predictive framework in a drug discovery context.
+
+\section{Deployment}
+The predictive models developed in this study, particularly the high-performing XGBoost framework, 
+have significant potential for integration into early-stage drug discovery and regulatory toxicology pipelines. 
+By providing rapid, silicon-based estimates of acute oral toxicity ($LD_{50}$), these models can be deployed in several key contexts:
+\begin{itemize}
+    \item \textbf{Preclinical Screening}: Virtual screening of massive chemical libraries to prioritize leads with favorable safety profiles, thereby reducing the rate of attrition due to toxicity in later developmental stages.
+    \item \textbf{Regulatory Compliance and GHS Classification}: Supporting the classification of chemicals according to the Globally Harmonized System (GHS) of Classification and Labelling of Chemicals, especially when experimental data is scarce.
+    \item \textbf{Alternative Testing (3Rs)}: Serving as a valid alternative to \textit{in vivo} testing, directly supporting the \textit{Reduction} and \textit{Refinement} components of the 3Rs framework in modern toxicology.
+\end{itemize}
+
+Beyond the Therapeutics Data Commons (TDC) dataset, the robust feature engineering pipeline utilized (through the hybrid combination of molecular fingerprints and physicochemical descriptors) is highly adaptable. 
+This framework can be applied to other toxicological endpoints, such as aquatic toxicity, mutagenicity (Ames test), or hepatotoxicity datasets (e.g., ClinTox or Tox21). 
+The scaffold-split methodology ensures that the deployment of these models remains reliable even when encountering novel chemical spaces, a common requirement when evaluating industrial chemicals or emerging pharmaceutical classes.
 
 \section{Discussion \& Conclusion}
 The results obtained for Group 5 indicate a toxicity class of [Class Number] according to the GHS (Globally Harmonized System). Comparing these results with historical data suggests that [Your Conclusion]. 
@@ -211,6 +273,10 @@ Partex ADMETrix. \textit{Advancing ADMET Prediction: A Hybrid Machine Learning F
 \bibitem{QSAR_Paper} 
 Zhu et al. \textit{Quantitative Structure-Activity Relationship Modeling of Rat Acute Toxicity by Oral Exposure}. 
 \url{https://pubs.acs.org/doi/abs/10.1021/tx900189p}
+
+\bibitem{OCE_Paper}
+Huang et al. \textit{A Unified System for Molecular Property Predictions: Oloren ChemEngine and its Applications}. ChemRxiv, 2022.
+\url{https://doi.org/10.26434/chemrxiv-2022-zz776}
 
 \end{thebibliography}
 
