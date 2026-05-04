@@ -1,57 +1,77 @@
-\documentclass[11pt,a4paper,twocolumn]{article}
+\documentclass[10pt,a4paper,twocolumn]{article}
 
-% Fundamental Packets
-\usepackage[utf8]{inputenc}         % chars codification
-\usepackage[T1]{fontenc}            % font encoding
-\usepackage[italian,english]{babel} % multilingual (english default)
-\usepackage{amsmath,amssymb}        % maths symbols
-\usepackage{graphicx}               % images
-\usepackage{booktabs}               % professional tables
-\usepackage{geometry}               % margin management
-\usepackage{cite}                   % citations
-\usepackage{url}                    % urls in bibliography
-\usepackage{float}                  % image exactly where placed with [H]
+% Fundamental packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian,english]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{float}
 \usepackage{subcaption}
+
 \graphicspath{{./src/}}
-% margins
+
+% Page layout
 \geometry{left=1.5cm, right=1.5cm, top=1.5cm, bottom=2cm}
 
 % Doc info
-\title{Predicting Acute Oral Toxicity ($LD_{50}$): A Machine Learning and Deep Learning Approach using Molecular Descriptors and Graph Representations}
-\author{Group 5 Members \\ 
+\title{Predicting Acute Toxicity ($LD_{50}$): A Machine Learning approach using Molecular Descriptors and Graph Representations}
+\author{Group 5 \\ 
         \small \textit{Abate Luca, Bernacchia Alessia, Pioda Tommaso, Villani Giacomo} \\
-        \small \textit{Department of Innovative Technologies} \\
-        \small \textit{SUPSI}}
-\date{\today}
+        \small \textit{SUPSI (DTI) - Machine Learning for Drug Design}}
+\date{May, 2026}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-Acute toxicity prediction is a cornerstone of drug discovery, as 
-toxicity-related failures account for a significant portion of preclinical 
-compound attrition. In this project, we utilize the Therapeutics Data Commons 
-(TDC) $LD_{50}$ dataset, comprising 7,385 drug molecules, to develop a predictive 
-framework. We implement a rigorous data pipeline involving chemical standardization 
-and the extraction of hybrid descriptors, including Morgan, Avalon, and ErG 
-fingerprints, alongside Dragon-derived physicochemical features. We evaluate 
-the performance of classical machine learning models (Random Forest, Ridge, 
-SVM, XGBoost) and deep learning architectures (CNN, GNN). Our methodology 
-emphasizes data consistency and feature engineering to ensure that the models 
-generalize effectively to novel chemical structures, ultimately aiming to 
-reduce preclinical attrition and enhance drug safety profiles.
+Acute toxicity prediction is a cornerstone of drug discovery, as
+toxicity-related failures account for a significant portion of preclinical
+compound attrition. In this project, we utilize the Therapeutics Data Commons
+(TDC) $LD_{50}$ dataset, comprising 7,385 drug molecules, to develop a
+predictive framework. We implement a rigorous data pipeline involving chemical
+standardization and the extraction of hybrid descriptors, including Morgan,
+Avalon, and ErG fingerprints, alongside Dragon-derived physicochemical features.
+We evaluate the performance of classical machine learning models (Random Forest,
+Ridge, SVM, XGBoost). Our methodology
+emphasizes data consistency and feature engineering to ensure that the models
+generalize effectively to novel chemical structures, ultimately aiming to reduce
+preclinical attrition and enhance drug safety profiles.
 \end{abstract}
 
 \section{Introduction}
-The majority of drugs exhibit some degree of toxicity to human organisms. Accurate prediction of these effects is critical, as toxicity is one of the primary causes of compound attrition in the pharmaceutical pipeline. Studies indicate that approximately 70\% of all toxicity-related attrition occurs preclinically, yet these findings are strongly predictive of toxicities in humans. Consequently, early and accurate toxicity prediction can significantly reduce compound attribution and boost the likelihood of a drug successfully reaching the market.
 
-This study focuses on the prediction of the median lethal dose ($LD_{50}$), a standard measure of acute toxicity. A significant challenge in this task is generalization: as drug structures evolve, models must maintain accuracy on novel drugs with low structural similarity to existing datasets. Our project addresses this by combining traditional physicochemical descriptors with advanced molecular fingerprints and graph-based deep learning, ensuring a comprehensive representation of chemical space.
+The majority of drugs exhibit some degree of toxicity to human organisms.
+Accurate prediction of these effects is critical, as toxicity is one of the
+primary causes of compound attrition in the pharmaceutical pipeline. Studies
+indicate that approximately 70\% of all toxicity-related attrition occurs
+preclinically, yet these findings are strongly predictive of toxicities in
+humans. Consequently, early and accurate toxicity prediction can significantly
+reduce compound attrition and boost the likelihood of a drug successfully
+reaching the market.
+
+This study focuses on the prediction of the median lethal dose ($LD_{50}$), a
+standard measure of acute toxicity. A significant challenge in this task is
+generalization: as drug structures evolve, models must maintain accuracy on
+novel drugs with low structural similarity to existing datasets. Our project
+addresses this by combining traditional physicochemical descriptors with
+advanced molecular fingerprints, ensuring a
+comprehensive representation of chemical space.
 
 \section{Materials \& Methods}
 
 \subsection{Data Collection}
-The dataset was obtained from the Therapeutics Data Commons (TDC) for the Acute Toxicity $LD_{50}$ task \cite{TDC_LD50}. The raw data provides Drug IDs, SMILES strings, and the target toxicity label ($Y$). The dataset consists of 7,385 small molecules, partitioned into the following sets:
+
+The dataset was obtained from the Therapeutics Data Commons (TDC) for the Acute
+Toxicity $LD_{50}$ task \cite{TDC_LD50}. The raw data provides Drug IDs, SMILES
+strings, and the target toxicity label ($Y$). The dataset consists of 7,385
+small molecules, partitioned into the following sets:
+
 \begin{itemize}
     \item \textbf{Training Set}: 5,169 samples (70\%)
     \item \textbf{Validation Set}: 738 samples (10\%)
@@ -59,53 +79,104 @@ The dataset was obtained from the Therapeutics Data Commons (TDC) for the Acute 
 \end{itemize}
 
 \subsection{Data Cleaning and Consistency}
-Rigorous data cleaning was performed to ensure the quality of the inputs. The process involved:
+
+Rigorous data cleaning was performed to ensure the quality of the inputs. The
+process involved:
+
 \begin{itemize}
-    \item \textbf{Standardization}: SMILES strings were checked for chemical validity using RDKit; 0 invalid strings were found across all sets.
-    \item \textbf{Missing Values}: The dataset was confirmed to be complete, with no missing values in any columns.
-    \item \textbf{Salt Stripping}: We utilized RDKit's \texttt{SaltRemover} to strip counter-ions and salts, ensuring that descriptors reflect only the parent organic molecule. No salts were detected in the current splits.
-    \item \textbf{Duplicate and Inconsistency Handling}: No identical duplicates were found. However, we identified 15, 5, and 10 inconsistent SMILES in the train, valid, and test sets, respectively (where the same molecule was associated with different labels). We chose to retain these cases to represent natural assay variability, documenting them for evaluation.
+    \item \textbf{Standardization}: SMILES strings were checked for chemical
+    validity using RDKit; 0 invalid strings were found across all sets.
+
+    \item \textbf{Missing Values}: The dataset was confirmed to be complete,
+    with no missing values in any columns.
+
+    \item \textbf{Salt Stripping}: We utilized RDKit's \texttt{SaltRemover} to
+    strip counter-ions and salts, ensuring that descriptors reflect only the
+    parent organic molecule. No salts were detected in the current splits.
+
+    \item \textbf{Duplicate and Inconsistency Handling}: No identical duplicates
+    were found. However, we identified 15, 5, and 10 inconsistent SMILES in the
+    train, valid, and test sets, respectively (where the same molecule was
+    associated with different labels). We chose to retain these cases to
+    represent natural assay variability, documenting them for evaluation.
 \end{itemize}
 
 \subsection{Molecular Descriptors and Feature Engineering}
-We extracted three types of molecular fingerprints and two sets of physicochemical descriptors to capture diverse chemical properties without including the target $LD_{50}$ in the feature construction:
+
+We extracted three types of molecular fingerprints and two sets of
+physicochemical descriptors to capture diverse chemical properties without
+including the target $LD_{50}$ in the feature construction:
+
 \begin{itemize}
-    \item \textbf{Morgan Fingerprints}: Capture local atom environments via circular pathways.
-    \item \textbf{Avalon Fingerprints}: Based on path-based enumeration and feature substructures \cite{Partex}.
-    \item \textbf{ErG Fingerprints}: Capture pharmacophore features and topological distances \cite{Partex}.
-    \item \textbf{General Descriptors}: Features like Molecular Weight, LogP, and TPSA \cite{Partex}.
-    \item \textbf{Dragon Descriptors}: Advanced topological and electronic descriptors extracted based on established QSAR methodologies \cite{QSAR_Paper}.
+    \item \textbf{Morgan Fingerprints}: Capture local atom environments via
+    circular pathways.
+
+    \item \textbf{Avalon Fingerprints}: Based on path-based enumeration and
+    feature substructures \cite{Partex}.
+
+    \item \textbf{ErG Fingerprints}: Capture pharmacophore features and
+    topological distances \cite{Partex}.
+
+    \item \textbf{General Descriptors}: Features like Molecular Weight, LogP,
+    and TPSA \cite{Partex}.
+
+    \item \textbf{Dragon Descriptors}: Advanced topological and electronic
+    descriptors extracted based on established QSAR methodologies
+    \cite{QSAR_Paper}.
 \end{itemize}
 
+
+By combining fingerprints (Avalon, Morgan, ErG) with Dragon descriptors, we
+create a hybrid feature space. These features are strictly structural and
+physicochemical, ensuring that no target leakage occurs during the learning
+process.
+
 \subsection{Model Selection and Embedded Feature Selection}
-We implemented a range of models to compare traditional and deep learning approaches:
+
+We implemented a range of models to compare their predictive 
+performance on the $LD_{50}$ regression task:
+
 \begin{itemize}
-    \item \textbf{Machine Learning}: Random Forest, Ridge Regression, Support Vector Machines (SVM), and XGBoost.
-    \item \textbf{Deep Learning}: Convolutional Neural Networks (CNN) for sequence/grid data and Graph Neural Networks (GNN) to process molecular graphs directly.
-    \item \textbf{Embedded Feature Selection}: To manage high dimensionality, we utilize embedded methods (e.g., Lasso or tree-based importance) that perform selection during training, identifying the most predictive features while reducing noise.
+    \item \textbf{Machine Learning}: Random Forest, Ridge Regression, Support
+    Vector Machines (SVM), and XGBoost.
+
+    \item \textbf{Embedded Feature Selection}: To manage high dimensionality, we
+    utilize embedded methods (e.g., Lasso or tree-based importance) that perform
+    selection during training, identifying the most predictive features while
+    reducing noise.
 \end{itemize}
 
 \section{Data Exploration and Processing}
-% This section includes the details of the steps taken before modeling.
+
 \subsection{Initial Statistics}
-The initial dataset imported 7,385 drugs. Distribution analysis of the $LD_{50}$ values was conducted to understand the range of toxicity across the chemical space.
+
+The initial dataset imported 7,385 drugs. Distribution analysis of the $LD_{50}$
+values was conducted to understand the range of toxicity across the chemical
+space.
 
 \subsection{Cleaning Results}
-As noted in the Methods, the cleaning process verified the integrity of the TDC data. The lack of invalid SMILES and missing values suggests a high-quality initial collection. The removal of salts ensures that descriptors like Molecular Weight are not skewed by irrelevant counter-ions.
+
+As noted in the Methods, the cleaning process verified the integrity of the TDC
+data. The lack of invalid SMILES and missing values suggests a high-quality
+initial collection. The removal of salts ensures that descriptors like Molecular
+Weight are not skewed by irrelevant counter-ions.
 
 \subsection{Basic Data Exploration}
-Basic exploratory data analysis confirmed that the processed training, validation, and test partitions contain no missing values, and that the target distributions are consistent across all sets (as shown in Figure~\ref{target_distr}). 
-Scaffold analysis showed a high number of unique molecular frameworks and essentially zero overlap between partitions, indicating that the model evaluation is based on scaffold-split generalization rather than memorization of known structures. 
-Spearman correlation analysis and a linear regression baseline identified the most predictive descriptors and provided an initial ranking of feature relevance.
-In addition through ANOVA analysis we were able to extrapolate the most significant features that are shown in Figure~\ref{anova}
+Basic exploratory data analysis showed no missing values in the processed training, validation, and test splits. The target distributions are broadly similar in shape, but they are not identical: the test set is shifted toward higher $LD_{50}$ values (median 2.56, compared with 2.31 for training and 2.37 for validation) and contains more extreme high-value outliers, indicating a moderate distribution shift across partitions (Figure~\ref{target_distr}). 
+Scaffold analysis showed a high number of unique molecular frameworks and no scaffold overlap between the current training, validation, and test partitions. This confirms that the model evaluation is based on scaffold-split generalization rather than memorization of known molecular frameworks. 
+Spearman correlation analysis highlighted moderately associated descriptors, with the strongest correlations around 0.46 in absolute value. In contrast, the simple linear regression baseline showed very limited explanatory power ($R^2 \approx 0.0015$), suggesting that linear effects alone are insufficient for this task.
+The inter-feature correlation analysis also revealed many highly redundant descriptor pairs, including several near-duplicate RDKit and Mordred features. This redundancy motivated the subsequent feature selection step.
 
-\begin{figure}[H] %here in the text
+
+\begin{figure}[H]
+    \centering
     \includegraphics[width=\linewidth]{exploration/target_distribution.png}
     \caption{Comparison of sets' target distribution.}
     \label{target_distr}
 \end{figure}
 
-\begin{figure}[H] %here in the text
+\begin{figure}[H]
+    \centering
     \includegraphics[width=\linewidth]{exploration/anova.png}
     \caption{ANOVA significant features $p < 0.05$.}
     \label{anova}
@@ -113,91 +184,280 @@ In addition through ANOVA analysis we were able to extrapolate the most signific
 
 \subsection{Advanced Data Exploration}
 Advanced analysis investigated descriptor-level variability, outliers, and the intrinsic dimensionality of the feature space. 
-Outliers were detected using both IQR and Z-score thresholds (as shown in Figure~\ref{outliers}), and feature dispersion was measured using the coefficient of variation (as shown in Figure~\ref{coeff_var}). 
-Principal Component Analysis (PCA) with robust scaling quantified the number of components required to capture the majority of variance, while multi-scale PCA projections revealed structure in the chemical-toxicity relationships showed in Figure~\ref{pca_multiscale}. 
-Finally, ANOVA across discretized low, medium, and high toxicity groups identified descriptors with statistically significant differences, highlighting promising features for downstream modeling.
-\begin{figure}[H] %here in the text
+Outliers were detected using both IQR and Z-score thresholds (Figure~\ref{outliers}); in the current training split, 38 $LD_{50}$ values were marked as target outliers using the $|z| > 3$ criterion. Feature dispersion was measured using the coefficient of variation (Figure~\ref{coeff_var}), although this metric was treated as a diagnostic indicator because descriptors with means close to zero can produce unstable CV values. 
+Principal Component Analysis (PCA) with robust scaling quantified the number of components required to capture the majority of variance. The PCA projections were used to inspect whether toxicity-related patterns emerge in the descriptor space, without assuming a clear separation between toxicity levels (Figure~\ref{pca_multiscale}). 
+Finally, ANOVA across discretized low, medium, and high toxicity groups identified descriptors with statistically significant differences (Figure~\ref{anova}). Since a large number of descriptors were tested, these results were interpreted as exploratory evidence of feature relevance rather than as standalone proof of causal or independent importance.
+
+
+\begin{figure}[H]
+    \centering
     \includegraphics[width=\linewidth]{exploration/top_features_outliers.png}
     \caption{Set of the top features with outliers.}
     \label{outliers}
 \end{figure}
 
-\begin{figure}[H] %here in the text
-    \includegraphics[width=\linewidth]{exploration/features_coefficient_variation.png}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\linewidth,height=0.28\textheight,keepaspectratio]{exploration/features_coefficient_variation.png}
     \caption{Coefficient of variation.}
     \label{coeff_var}
 \end{figure}
 
-\begin{figure}[H] %here in the text
-    \includegraphics[width=\linewidth]{exploration/PCA_multiscale.png}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.86\linewidth,height=0.30\textheight,keepaspectratio]{exploration/PCA_multiscale.png}
     \caption{PCA with multiple scale representation.}
     \label{pca_multiscale}
 \end{figure}
 
+\newpage
 \subsection{Feature Selection}
-Given the high dimensionality of the initial dataset (1,816 features), a rigorous feature selection procedure was implemented. This process aims to mitigate the risk of overfitting, enhance model performance, and optimize computational efficiency by retaining only the most informative descriptors for predicting $LD_{50}$.
+
+Given the high dimensionality of the initial dataset (1,816 features), a
+rigorous feature selection procedure was implemented. This process aims to
+mitigate the risk of overfitting, enhance model performance, and optimize
+computational efficiency by retaining only the most informative descriptors for
+predicting $LD_{50}$.
+
 Our feature selection pipeline is structured as follows:
 
 \begin{itemize}
-    \item \textbf{Spearman Filter}: This step removes redundant features by identifying highly collinear pairs and filtering those with weak monotonic relationships to the target $LD_{50}$, ensuring a lean and non-redundant input space.
-    \item \textbf{Random Forest Regressor}: We leverage tree-based Mean Decrease in Impurity (MDI) to rank features. This allows us to identify descriptors with significant non-linear predictive power and structural importance.
-    \item \textbf{LASSO Feature Importance}: By utilizing $L_1$ regularization, we perform embedded selection. This technique shrinks the coefficients of non-essential descriptors to zero, isolating a sparse yet high-impact feature set.
-    \item \textbf{Performance Evaluation}: We systematically monitor the stability and predictive accuracy of the models as the feature count is reduced. This ensures that the truncation of the feature space does not result in the loss of critical chemical information.
-    \item \textbf{Permutation Feature Importance}: As a final validation, we measure the increase in prediction error when a feature's values are randomly shuffled. This identifies the true drivers of the model's logic and confirms the reliability of the selected descriptors.
+    \item \textbf{Spearman Filter}: This step removes redundant features by
+    identifying highly collinear pairs and filtering those with weak monotonic
+    relationships to the target $LD_{50}$, ensuring a lean and non-redundant
+    input space.
+
+    \item \textbf{Random Forest Regressor}: We leverage tree-based Mean Decrease
+    in Impurity (MDI) to rank features. This allows us to identify descriptors
+    with significant non-linear predictive power and structural importance.
+
+    \item \textbf{LASSO Feature Importance}: By utilizing $L_1$ regularization,
+    we perform embedded selection. This technique shrinks the coefficients of
+    non-essential descriptors to zero, isolating a sparse yet high-impact
+    feature set.
+
+    \item \textbf{Score curve}: To validate our selection and determine the
+    \textbf{optimal subset size}, we analyzed the performance trend by training
+    the models incrementally. We started with the single most important feature
+    and progressively added the remaining ones in descending order of
+    importance. This allowed us to inspect the \textbf{elbow point}, namely the
+    threshold where adding further features yields diminishing returns or
+    introduces noise, thus optimizing the trade-off between model complexity and
+    predictive power. Based on this analysis, we exported Random Forest-ranked
+    feature subsets at 20, 100, and 200 descriptors and used the compact
+    20-feature subset as the primary candidate for the downstream comparison.
+
+    \item \textbf{Permutation Feature Importance}: As a final validation, we
+    measure the increase in prediction error when a feature's values are
+    randomly shuffled. This identifies the true drivers of the model's logic and
+    confirms the reliability of the selected descriptors. From the PFI plot of
+    the three methods (Figure~\ref{fig:pfi_comp}), we concluded that we will use
+    the features selected by the Random Forest method, since it uses a
+    \textbf{non-linear approach} that captures complex interactions between
+    variables, providing a more robust and stable selection compared to the
+    linear constraints of LASSO or the univariate nature of the Spearman filter.
 \end{itemize}
-The integration of these methods—combining statistical filters, embedded regularization, and post-hoc validation—ensures that the final model is both performant and chemically interpretable.
+
+The integration of these methods, combining statistical filters, embedded
+regularization, and post-hoc validation, ensures that the final model is both
+performant and chemically interpretable.
+
 \clearpage
-\begin{figure*}[htbp] % * is to ignore the columns
+
+\begin{figure*}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{feat_selection/pfi_comparison.png}
-    \caption{Comparison of feature selection techniques.}
-    \label{fig:fs_comp}
+    \includegraphics[width=0.86\textwidth]{feat_selection/pfi_comparison.png}
+    \caption{Permutation Feature Importance (PFI) comparison between Spearman, Random Forest, and LASSO feature-selection methods.}
+    \label{fig:pfi_comp}
 \end{figure*}
+
 \clearpage
+\section{Predictive Modeling}
+
+In this section, we describe the development and evaluation of several machine
+learning architectures implemented to predict chemical toxicity ($LD_{50}$). To
+ensure optimal performance, each model underwent automated hyperparameter
+optimization using the \textbf{Optuna} framework. We systematically analyzed the
+relationship between feature count and predictive accuracy through \textbf{score
+curves}, identifying the optimal subset of descriptors for each specific
+algorithm.
+
+Following training, the models were evaluated on the independent test set. To
+bridge the gap between predictive performance and chemical insight, we employed
+\textbf{SHAP (SHapley Additive exPlanations)} values for post-hoc
+interpretability, allowing us to identify the molecular drivers behind the
+toxicity predictions. The following architectures were evaluated:
+
+\begin{itemize}
+    \item \textbf{Linear Models}: Ridge Regression served as our regularized
+    linear baseline.
+
+    \item \textbf{Ensemble Methods}: Random Forest and XGBoost were utilized to
+    capture non-linear relationships and feature interactions.
+
+    \item \textbf{Kernel-based Models}: Support Vector Machines (SVM) were
+    implemented to project the chemical space into higher dimensions.
+
+    \item \textbf{Soft-voting Ensemble}: A Weighted Ensemble was
+    constructed to integrate the strengths of individual predictors for superior
+    generalization.
+\end{itemize}
 
 
-\subsection{Inconsistency Rationale}
-The identified inconsistent samples (30 in total) were maintained to prevent the loss of experimental variability. In biological assays, $LD_{50}$ values can vary depending on conditions, and keeping these entries allows the models to potentially learn a more robust, averaged representation.
+\section{Performance Comparison}
+We tested different machine learning models to predict the $LD_{50}$ values of the test set. 
+The performance metrics used for evaluation are Root Mean Square Error (RMSE), 
+Mean Absolute Error (MAE), and Coefficient of Determination ($R^2$).
 
-\subsection{Feature Integration}
-By combining fingerprints (Avalon, Morgan, ErG) with Dragon descriptors, we create a hybrid feature space. These features are strictly structural and physicochemical, ensuring that no target leakage occurs during the learning process.
-
-\section{Results}
-Present your findings here. Use tables to summarize the data.
-
-\begin{table}[h]
+\begin{table}[H]
 \centering
-\caption{Dose-Response Data for Group 5 Substance.}
-\begin{tabular}{ccc}
+\caption{Performance of the different machine learning models on the test set.}
+\label{tab:model_test_comparison}
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
 \toprule
-Dose (mg/kg) & Mortality (\%) & Observations \\
+Model & RMSE & MAE & $R^2$ \\
 \midrule
-10  & 0   & No symptoms \\
-50  & 20  & Lethargy \\
-100 & 50  & $LD_{50}$ Threshold \\
-500 & 100 & Rapid onset \\
+Ridge Regression & 1.1126 & 0.7460 & -0.1046 \\
+SVM & 0.9336 & 0.6507 & 0.2221 \\
+Random Forest & 0.8888 & 0.6289 & 0.2951 \\
+Weighted Ensemble & 0.8978 & 0.6269 & 0.2807 \\
+\textbf{XGBoost} & \textbf{0.8773} & \textbf{0.6158} & \textbf{0.3132} \\
 \bottomrule
 \end{tabular}
+
+\vspace{0.6em}
+\raggedright
+\textbf{Interpretation.}
+XGBoost is the best performing model on the test set, since we obtained the 
+lowest RMSE and MAE and the highest $R^2$ from it. This result is justified 
+by the nature of the descriptor space: the relationship between molecular 
+descriptors and $LD_{50}$ is non linear, sparse, and affected by interactions 
+among physicochemical and structural features. Ridge Regression performs poorly
+due to its linear nature, while SVM and Random Forest improve the 
+fit but remain less effective on the scaffold-split test compounds. 
+The weighted ensemble is competitive, especially in MAE, but it does not surpass 
+XGBoost, suggesting that the validation-optimized combination adds robustness 
+without improving the final held-out ranking.
+\\
+Overall, the test MAE of 0.6158 indicates competitive performance for this
+descriptor-based $LD_{50}$ prediction setting.
 \end{table}
 
-\section{Discussion \& Conclusion}
-The results obtained for Group 5 indicate a toxicity class of [Class Number] according to the GHS (Globally Harmonized System). Comparing these results with historical data suggests that [Your Conclusion]. 
+\section{Best Model: XGBoost}
+XGBoost was selected as the final model because it provided the best balance
+between predictive accuracy and robustness on the held-out scaffold split. The
+model is based on gradient-boosted decision trees: each tree is fitted
+sequentially to correct the residual errors of the previous ensemble, while
+regularization, subsampling, and column sampling reduce overfitting. This makes
+the approach well suited to molecular descriptor tables, where the relationship
+between structural features and toxicity can be non-linear and driven by
+feature interactions.
 
-In conclusion, while $LD_{50}$ provides a fundamental baseline for toxicity, modern toxicology is increasingly moving towards alternative methods (3Rs: Replacement, Reduction, Refinement) to minimize animal testing while maintaining high safety standards.
+Hyperparameters were optimized with Optuna on an internal split of the training
+data, while the validation set was kept for monitoring and the test set was used
+only for the final evaluation. The selected configuration used 1000 trees, a
+small learning rate (0.0105), maximum depth 9, and regularization terms for both
+the tree weights and split construction. The learning curve showed that
+validation RMSE improved as more training rows were used, decreasing from 0.7394
+with 1033 rows to 0.6726 with all 5169 training rows. This indicates that the
+model benefits from additional data and does not saturate immediately.
+
+The feature-count curve showed that performance improved substantially when
+moving from very small descriptor subsets to richer representations. Validation
+RMSE decreased from 0.7580 with 20 features to 0.6821 with 100 features, while
+using the full 1813-feature representation reached a similar validation RMSE of
+0.6740. This suggests that a compact selected feature set captures much of the
+signal, but the final XGBoost model can still exploit additional descriptors
+without a large loss of generalization.
+
+\subsection{Interpretability}
+To gain insight into the decision-making process of our best-performing model, we employed SHAP (SHapley Additive exPlanations) for both global and local interpretability. This allows us to bridge the gap between high-dimensional molecular descriptors and their toxicological meaning.
+
+\subsubsection{Global Interpretability}
+The global impact of descriptors is summarized in the SHAP beeswarm plot (Figure \ref{xgb_global}). The analysis reveals that the model relies heavily on a mix of information-theoretic and electronic descriptors:
+
+\begin{itemize}
+    \item \textbf{mordred\_MIC1}: Identified as the most critical driver. We observe a strong positive correlation where lower feature values consistently lead to lower SHAP values, pushing the prediction toward higher toxicity (lower $LD_{50}$). This suggests that molecular complexity and atom neighborhood information are fundamental to the model's logic.
+    \item \textbf{mordred\_BCUTi-1h}: This descriptor, related to the ionization potential, shows a non-homogeneous distribution. While it holds high importance, its impact is not strictly monotonic, suggesting that the model captures complex interactions where the effect of ionization potential depends on the specific chemical scaffold.
+    \item \textbf{MaxPartialCharge}: The model identifies this feature as a "threshold" indicator. While many molecules cluster around zero impact, extreme high values (represented by the pink tail) significantly push the SHAP values upward, acting as a strong signal for reduced acute toxicity.
+\end{itemize}
+
+\subsubsection{Local Interpretability}
+To understand how the model handles individual compounds, we analyzed a local waterfall plot (Figure \ref{xgb_local}). In this specific instance ($f(x) = 2.564$), we can observe the "push and pull" of conflicting features:
+
+\begin{itemize}
+    \item \textbf{Positive Contributions}: The safety score is primarily increased by \textbf{mordred\_MIC1} ($+0.15$), \textbf{mordred\_PEOE\_VSA8} ($+0.07$), and \textbf{SMR\_VSA10} ($+0.05$). These structural and surface area descriptors act as the main mitigating factors for this molecule.
+    \item \textbf{Negative Contributions}: Conversely, \textbf{mordred\_BCUTs-1l} ($-0.04$) and \textbf{MaxPartialCharge} ($-0.04$) are the main features pulling the prediction toward a more toxic value. 
+\end{itemize}
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{interpretability/xgb_global.png}
+    \caption{Global explanation of the XGBoost model.}
+    \label{xgb_global}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{interpretability/xgb_local.png}
+    \caption{Local explanation of the XGBoost model.}
+    \label{xgb_local}
+\end{figure}
+
+This dual perspective confirms that XGBoost does not simply rely on a linear combination of features, but rather evaluates the specific chemical context of each molecule. The alignment between global trends and local explanations reinforces the reliability of our predictive framework in a drug discovery context.
+
+\section{Deployment}
+The predictive models developed in this study, particularly the high-performing XGBoost framework, 
+have significant potential for integration into early-stage drug discovery and regulatory toxicology pipelines. 
+By providing rapid, \textit{in silico} estimates of acute oral toxicity ($LD_{50}$), these models can be deployed in several key contexts:
+\begin{itemize}
+    \item \textbf{Preclinical Screening}: Virtual screening of massive chemical libraries to prioritize leads with favorable safety profiles, thereby reducing the rate of attrition due to toxicity in later developmental stages.
+    \item \textbf{Regulatory Compliance and GHS Classification}: Supporting the classification of chemicals according to the Globally Harmonized System (GHS) of Classification and Labelling of Chemicals, especially when experimental data is scarce.
+    \item \textbf{Alternative Testing (3Rs)}: Serving as a valid alternative to \textit{in vivo} testing, directly supporting the \textit{Reduction} and \textit{Refinement} components of the 3Rs framework in modern toxicology.
+\end{itemize}
+
+Beyond the Therapeutics Data Commons (TDC) dataset, the robust feature engineering pipeline utilized (through the hybrid combination of molecular fingerprints and physicochemical descriptors) is highly adaptable. 
+This framework can be applied to other toxicological endpoints, such as aquatic toxicity, mutagenicity (Ames test), or hepatotoxicity datasets (e.g., ClinTox or Tox21). 
+The scaffold-split methodology ensures that the deployment of these models remains reliable even when encountering novel chemical spaces, a common requirement when evaluating industrial chemicals or emerging pharmaceutical classes.
+
+\section{Discussion \& Conclusion}
+The model predicts continuous $LD_{50}$ 
+values for a heterogeneous set of molecules 
+rather than one compound-specific $LD_{50}$ value 
+in mg/kg. Comparing these results with historical 
+TDC benchmark data suggests that our XGBoost model 
+achieves competitive predictive performance, 
+with a test \textbf{MAE of 0.6158}, although the moderate 
+$R^2$ indicates that the model should be used mainly 
+as an early screening tool rather than as a 
+definitive toxicological classifier in a production 
+scenario.\\
+
+
+In conclusion, the $LD_{50}$ prediction task remains a complex regression
+problem that benefits from a hybrid feature representation and robust machine
+learning techniques. The results also highlight clear limitations: the moderate
+$R^2$ and the scaffold-level distribution shift indicate that the model should
+not be used as a standalone basis for critical drug-development decisions.
+However, it can support early prioritization of compounds for further testing
+and provide useful initial evidence for future model refinement.
 
 \begin{thebibliography}{99}
 
-\bibitem{TDC_LD50} 
-Therapeutics Data Commons. \textit{Acute Toxicity LD50}. 
+\bibitem{TDC_LD50}
+Therapeutics Data Commons. \textit{Acute Toxicity LD50}.
 \url{https://tdcommons.ai/single_pred_tasks/tox/#acute-toxicity-ld50}
 
-\bibitem{Partex} 
-Partex ADMETrix. \textit{Advancing ADMET Prediction: A Hybrid Machine Learning Framework}. 
+\bibitem{Partex}
+Partex ADMETrix. \textit{Advancing ADMET Prediction: A Hybrid Machine Learning Framework}.
 \url{https://github.com/partex-nv-opensource/tdc-submission/blob/main/src/ics-admet-prediction-tdc-versiontwo/report/Advancing%20ADMET%20Prediction_%20A%20Hybrid%20Machine%20Learning%20Framework%20(Partex%20ADMETrix).pdf}
 
-\bibitem{QSAR_Paper} 
-Zhu et al. \textit{Quantitative Structure-Activity Relationship Modeling of Rat Acute Toxicity by Oral Exposure}. 
+\bibitem{QSAR_Paper}
+Zhu et al. \textit{Quantitative Structure-Activity Relationship Modeling of Rat Acute Toxicity by Oral Exposure}.
 \url{https://pubs.acs.org/doi/abs/10.1021/tx900189p}
+
+\bibitem{OCE_Paper}
+Huang et al. \textit{A Unified System for Molecular Property Predictions: Oloren ChemEngine and its Applications}. ChemRxiv, 2022.
+\url{https://doi.org/10.26434/chemrxiv-2022-zz776}
 
 \end{thebibliography}
 

@@ -89,12 +89,14 @@ def load_tabular_arrays(data_dir: str | Path = PROCESSED_DATA_DIR) -> tuple:
 def load_feature_selected_arrays(
     feature_dir: str | Path = FEATURE_SELECTION_DATA_DIR,
     target_data_dir: str | Path = PROCESSED_DATA_DIR,
+    max_features: int | None = None,
 ) -> tuple:
     """Load train/valid/test arrays restricted to the feature-selection output.
 
     The feature-selection CSV files contain only the selected descriptors, while
     the target is kept in the processed split files. Both split sets must keep
-    the same row order.
+    the same row order. When ``max_features`` is provided, the top prefix from
+    the feature-selection CSV column order is used before preprocessing.
     """
     feature_dir = Path(feature_dir).expanduser().resolve()
     target_frames = load_split_frames(target_data_dir)
@@ -110,6 +112,14 @@ def load_feature_selected_arrays(
     train_columns = list(X["train"].columns)
     if train_columns != list(X["valid"].columns) or train_columns != list(X["test"].columns):
         raise ValueError("Feature-selected train, validation and test columns must match")
+    if any(col in train_columns for col in (TARGET_COLUMN, *ID_COLUMNS)):
+        train_columns = [col for col in train_columns if col not in (TARGET_COLUMN, *ID_COLUMNS)]
+        #raise ValueError("Feature-selection CSV files must contain descriptor columns only")
+    if max_features is not None:
+        if max_features < 1:
+            raise ValueError("max_features must be at least 1 when provided")
+        train_columns = train_columns[:max_features]
+        X = {split: frame.loc[:, train_columns] for split, frame in X.items()}
 
     for split in X:
         if len(X[split]) != len(y[split]):
