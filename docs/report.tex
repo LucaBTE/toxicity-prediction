@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper,twocolumn]{article}
+\documentclass[10pt,a4paper,twocolumn]{article}
 
 % Fundamental packages
 \usepackage[utf8]{inputenc}
@@ -38,7 +38,7 @@ predictive framework. We implement a rigorous data pipeline involving chemical
 standardization and the extraction of hybrid descriptors, including Morgan,
 Avalon, and ErG fingerprints, alongside Dragon-derived physicochemical features.
 We evaluate the performance of classical machine learning models (Random Forest,
-Ridge, SVM, XGBoost) and deep learning architectures (CNN, GNN). Our methodology
+Ridge, SVM, XGBoost). Our methodology
 emphasizes data consistency and feature engineering to ensure that the models
 generalize effectively to novel chemical structures, ultimately aiming to reduce
 preclinical attrition and enhance drug safety profiles.
@@ -60,7 +60,7 @@ standard measure of acute toxicity. A significant challenge in this task is
 generalization: as drug structures evolve, models must maintain accuracy on
 novel drugs with low structural similarity to existing datasets. Our project
 addresses this by combining traditional physicochemical descriptors with
-advanced molecular fingerprints and graph-based deep learning, ensuring a
+advanced molecular fingerprints, ensuring a
 comprehensive representation of chemical space.
 
 \section{Materials \& Methods}
@@ -132,8 +132,8 @@ physicochemical, ensuring that no target leakage occurs during the learning
 process.
 \subsection{Model Selection and Embedded Feature Selection}
 
-We implemented a range of models to compare traditional and deep learning
-approaches:
+We implemented a range of models to compare their predictive 
+performance on the $LD_{50}$ regression task:
 
 \begin{itemize}
     \item \textbf{Machine Learning}: Random Forest, Ridge Regression, Support
@@ -211,14 +211,14 @@ features for downstream modeling.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{exploration/features_coefficient_variation.png}
+    \includegraphics[width=0.82\linewidth,height=0.28\textheight,keepaspectratio]{exploration/features_coefficient_variation.png}
     \caption{Coefficient of variation.}
     \label{coeff_var}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{exploration/PCA_multiscale.png}
+    \includegraphics[width=0.86\linewidth,height=0.30\textheight,keepaspectratio]{exploration/PCA_multiscale.png}
     \caption{PCA with multiple scale representation.}
     \label{pca_multiscale}
 \end{figure}
