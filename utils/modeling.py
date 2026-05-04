@@ -113,7 +113,8 @@ def load_feature_selected_arrays(
     if train_columns != list(X["valid"].columns) or train_columns != list(X["test"].columns):
         raise ValueError("Feature-selected train, validation and test columns must match")
     if any(col in train_columns for col in (TARGET_COLUMN, *ID_COLUMNS)):
-        raise ValueError("Feature-selection CSV files must contain descriptor columns only")
+        train_columns = [col for col in train_columns if col not in (TARGET_COLUMN, *ID_COLUMNS)]
+        #raise ValueError("Feature-selection CSV files must contain descriptor columns only")
     if max_features is not None:
         if max_features < 1:
             raise ValueError("max_features must be at least 1 when provided")

@@ -18,11 +18,11 @@
 % Page layout
 \geometry{left=1.5cm, right=1.5cm, top=1.5cm, bottom=2cm}
 
-% Document info
-\title{Predicting Acute Oral Toxicity ($LD_{50}$): A Machine Learning Approach using Molecular Descriptors and Graph Representations}
-\author{Group 5 Members \\
+% Doc info
+\title{Predicting Acute Toxicity ($LD_{50}$): A Machine Learning approach using Molecular Descriptors and Graph Representations}
+\author{Group 5 \\ 
         \small \textit{Abate Luca, Bernacchia Alessia, Pioda Tommaso, Villani Giacomo} \\
-        \small \textit{SUPSI - DTI, Machine Learning for Drug Design}}
+        \small \textit{SUPSI (DTI) - Machine Learning for Drug Design}}
 \date{May, 2026}
 
 \begin{document}
@@ -329,10 +329,10 @@ Weighted Ensemble & 0.8978 & 0.6269 & 0.2807 \\
 \vspace{0.6em}
 \raggedright
 \textbf{Interpretation.}
-XGBoost is the best performing model on the test set, since it achieved the 
-lowest RMSE and MAE and the highest $R^2$. This result is justified 
+XGBoost is the best performing model on the test set, since we obtained the 
+lowest RMSE and MAE and the highest $R^2$ from it. This result is justified 
 by the nature of the descriptor space: the relationship between molecular 
-descriptors and $LD_{50}$ is non-linear, sparse, and affected by interactions 
+descriptors and $LD_{50}$ is non linear, sparse, and affected by interactions 
 among physicochemical and structural features. Ridge Regression performs poorly
 due to its linear nature, while SVM and Random Forest improve the 
 fit but remain less effective on the scaffold-split test compounds. 
